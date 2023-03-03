@@ -47,8 +47,6 @@ class SpiderWeibo:
                 page = int(page)  # get过来的page参数是字符串
 
             if UserInfo.objects.filter(_id=text).exists():
-
-                UserInfo.objects.get(_id=text)
                 res['ok'] = "数据库已存在该用户，开始返回数据"
                 res['data'] = serializers.serialize("json", UserInfo.objects.filter(_id=text))
                 aritcles = TweetsInfo.objects.filter(UserInfo_id=text).order_by("-PubTime")  # 查询所有的数据
