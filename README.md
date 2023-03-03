@@ -38,8 +38,15 @@
 
 5. 登录后台，http://localhost:8000/xadmin/SpiderAPI/target/ 在爬虫API里面的爬虫设置，输入一个用户uid + cookie，然后即可开始在首页localhost:8000数据爬虫id爬虫
 
+---
+
+TIPS:
 
 注意：怎么获取微博的登录Cookie，请登录后，请求这个网站 [https://weibo.cn/1767123691/info](https://weibo.cn/1767123691/info)，然后把cookie填入
+
+---
+
+怎么获取 单条微博id，可以给微博点赞，然后看 开发者模式里面的 Network，筛选 `weibo.com/aj/v6/like/add` 这个，然后就能看到请求参数中有个 mid: 4850671050040090，这就是单条微博ID
 
 
 ### 1、系统介绍（2019.5.4毕设已完成）：
