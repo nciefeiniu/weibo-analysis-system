@@ -7,6 +7,8 @@
 @Desc    :   None
 '''
 
+import random
+
 from django.shortcuts import render
 # from django.db.models import Q
 from django.http import HttpResponse, JsonResponse
@@ -59,14 +61,15 @@ class SpiderWeibo:
                 return HttpResponse(json.dumps(res))
             else:
                 print("数据库不存在该数据，开始爬虫")
-                Target.objects.filter(id=1).update(uid=text)
-                resp = list(Target.objects.values('uid', 'cookie', 'add_time'))
-                uid = int(resp[0]["uid"])
-                cookie = {"Cookie": resp[0]["cookie"]}
-                wb = Weibo(uid, cookie)
+                resp = Target.objects.all().order_by('?')
+                if not resp:
+                    print('没用微博账号Cookie，请在admin后端配置！！！')
+                    return
+                # 获取随机的微博登录cookie
+                cookie = {"Cookie": resp[0].cookie}
+                wb = Weibo(int(text), cookie)
                 wb.get_userInfo()
                 wb.get_weibo_info()
-                qqq = TweetsInfo.objects.filter(Content='').delete()
                 res['ok'] = "数据库不存在该数据的爬虫"
                 res['data'] = serializers.serialize("json", UserInfo.objects.filter(_id=text))
                 aritcles = TweetsInfo.objects.filter(UserInfo_id=text).order_by("-PubTime")  # 查询所有的数据
@@ -189,8 +192,7 @@ class SpiderWeibo:
         res = {}
         if request.method == "POST":
             text = request.POST.get("commentId")
-            try:
-                CommentWeiboInfo.objects.get(wb_id=text)
+            if CommentWeiboInfo.objects.filter(wb_id=text).exists():
                 res['ok'] = "数据库已存在该用户，开始返回数据"
                 wbinfos = CommentWeiboInfo.objects.filter(wb_id=text)
                 endTime = CommentInfo.objects.filter(CommentWeiboInfo_id=text).order_by("c_created_at")
@@ -272,13 +274,17 @@ class SpiderWeibo:
                 ]
                 print(res['commentqushi'])
                 return HttpResponse(json.dumps(res))
-            except CommentWeiboInfo.DoesNotExist:
-                resp = list(Target.objects.values('uid', 'cookie', 'add_time'))
-                uid = int(resp[0]["uid"])
-                cookie = {"Cookie": resp[0]["cookie"]}
-                wb = Weibo(uid, cookie)
+            else:
+                resp = Target.objects.all().order_by('?')
+                if not resp:
+                    print('没用微博账号Cookie，请在admin后端配置！！！')
+                    return
+                # 获取随机的微博登录cookie
+                cookie = {"Cookie": resp[0].cookie}
+
+                wb = Weibo(int(text), cookie)
                 print("数据库不存在该评论，正在爬虫生成")
-                mm = wb.get_comment_info(text)
+                wb.get_comment_info(text)
                 res['ok'] = "数据库不存在该用户，爬虫返回数据"
                 wbinfos = CommentWeiboInfo.objects.filter(wb_id=text)
                 endTime = CommentInfo.objects.filter(CommentWeiboInfo_id=text).order_by("c_created_at")
