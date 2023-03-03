@@ -117,7 +117,12 @@ class Weibo:
                             user_info.Num_Fans = int(num_fans[0])
             except Exception as e:
                 pass
-            
+
+            if UserInfo.objects.filter(_id=self.user_id).exists():
+                return "用户数据已存在！"
+            else:
+                user_info.save()
+                return "用户信息爬取成功~"
             try:
                 UserInfo.objects.get(_id = self.user_id)
                 return "用户数据已存在！"
@@ -406,7 +411,14 @@ class Weibo:
         wb_url = 'https://m.weibo.cn/detail/' + id
         wb_r = requests.get(wb_url, headers=self.agent, cookies=self.cookie).content
         soup = BeautifulSoup(wb_r, 'lxml')
-        src = soup.select('body script')[0].string
+        src = ''
+        for _script in soup.select('body script'):
+            if _script.string and 'mid' in _script.string and 'user' in _script.string:
+                src = _script.string
+                break
+        if not src:
+            print('获取失败，请检查爬虫是否正常')
+            return
         src_text = js2xml.parse(src,  debug=False)
         src_tree = js2xml.pretty_print(src_text)
         selector2 = etree.HTML(src_tree)
@@ -511,21 +523,16 @@ class Weibo:
                     if c_likenum:
                         commentInfo.c_like_num = int(c_likenum)
                     comment_num += 1
-                    try:
-                        CommentInfo.objects.get(c_id = commentInfo.c_id)
+
+                    if not CommentInfo.objects.filter(c_id=commentInfo.c_id).exists():
+                        print(commentInfo.__dict__)
+                        # TODO 这里有问题，有个时间，格式不对
+                        commentInfo.save()
+                    else:
                         print("评论已存在数据库")
-                    except CommentInfo.DoesNotExist:
-                        self.comment_list_to_insert.append(commentInfo)
-                        print(len(self.comment_list_to_insert))
                 i+=1
                 time.sleep(2)
             else:
                 print("跳出while=======================")
-                break        
-        try:
-            print("评论抓取完毕，开始写入数据库")
-            CommentInfo.objects.bulk_create(self.comment_list_to_insert)
-            print("评论写入数据库成功")
-            return "数据抓取完毕"
-        except Exception as e:
-            return "e:",e
+                break
+        return "数据抓取完毕"
