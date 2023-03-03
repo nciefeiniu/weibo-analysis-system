@@ -1,6 +1,18 @@
 ## weibo-analysis-system 
 `毕业设计`：微博用户情感分析系统
 
+> python 3.7
+> node 14.15.0
+
+
+注意，需要先去 `webview`中运行如下命令：
+
+1. npm install
+2. npm run build
+
+然后把生成的 `dist` 目录下的 `index.html` 拷贝到 `templates` 目录下，把 `webview/dist/static` 目录下的所有拷贝到 `webview/static` 目录下
+
+下面是Django的启动方式:
 
 (2020/02/02)更新，近日有不少童鞋来问我这个项目跑不起的问题，当时水平有点不够，写的确实有点乱，这里简单说明一下项目下下来直接跑起的方法。前提先搞好python环境和vue环境,保证你有一个账户密码连上数据库mysql。
 
