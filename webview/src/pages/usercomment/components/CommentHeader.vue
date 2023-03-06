@@ -220,7 +220,7 @@ export default {
       return this.userInfo[0].fields.wb_text.replace('data-hide=""', 'target="_blank"').replace(/1rem/g, '.3rem')
     },
     userImg: function () {
-      return eval('(' + this.userInfo[0].fields.wb_pic_ids + ')')
+      return [this.userInfo[0].fields.wb_user_profile_image_url]
     },
     imglen: function () {
       if (this.userImg.length === 1) {
