@@ -32,10 +32,9 @@ DEBUG = True
 ALLOWED_HOSTS = [
     '172.16.0.216',
     '192.168.31.161',
-    'localhost', 
+    'localhost',
     '127.0.0.1'
 ]
-
 
 # Application definition
 
@@ -87,20 +86,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'weibosystem.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'WeiboAnalysisSystem',
+        'NAME': 'test5',
         'USER': 'root',
-        'PASSWORD': '1234',
-        'HOST': 'localhost'
+        'PASSWORD': '123456',
+        'HOST': 'localhost',
+        'OPTIONS': {'charset': 'utf8mb4'},
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
@@ -120,7 +118,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
@@ -134,11 +131,10 @@ USE_L10N = True
 
 USE_TZ = False
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
-STATICFILES_DIRS = [             ## 添加静态文件路径
+STATICFILES_DIRS = [  ## 添加静态文件路径
     os.path.join(BASE_DIR, "webview/dist/static"),
 ]
