@@ -37,6 +37,7 @@ import re
 
 
 class SpiderWeibo:
+    @staticmethod
     @csrf_exempt
     def SpiderAPI(request):
         res = {}
@@ -87,6 +88,7 @@ class SpiderWeibo:
         #     print(li)
         #     return HttpResponse(json.dumps(li))
 
+    @staticmethod
     @csrf_exempt
     def WordCloudAPI(request):
         res = {}
@@ -145,6 +147,7 @@ class SpiderWeibo:
                 print("保存数据成功")
         return HttpResponse(json.dumps(res))
 
+    @staticmethod
     @csrf_exempt
     def TweetsAPI(request):
         ret = {}
@@ -180,6 +183,7 @@ class SpiderWeibo:
                 print(s.keywords(5))
             return HttpResponse("success")
 
+    @staticmethod
     @csrf_exempt
     def getQuick(request):
         infos = UserInfo.objects.values("_id", "Image", "NickName")
@@ -187,6 +191,7 @@ class SpiderWeibo:
         print(result)
         return JsonResponse(result, safe=False)
 
+    @staticmethod
     @csrf_exempt
     def getComment(request):
         res = {}
@@ -386,6 +391,7 @@ class SpiderWeibo:
             li.sort(key=lambda x: x[0])
             return HttpResponse(json.dumps(li))
 
+    @staticmethod
     @csrf_exempt
     def getWeibo(request):
         infos = CommentWeiboInfo.objects.values("wb_id", "wb_userId", "wb_userName", "wb_user_profile_image_url",
