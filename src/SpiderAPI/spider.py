@@ -28,6 +28,7 @@ from src.SnowNLPAPI.snownlp import SnowNLP
 from src.SnowNLPAPI.snownlp import sentiment
 from .models import UserInfo, TweetsInfo, CommentWeiboInfo, CommentInfo
 from .agents import getAgent
+from utils.ssl_print import DESAdapter
 
 
 class Weibo:
@@ -415,7 +416,26 @@ class Weibo:
     def get_comment_info(self, id):
         c_urls = 'https://m.weibo.cn/api/comments/show?id=' + id + '&page={}'
         wb_url = 'https://m.weibo.cn/detail/' + id
-        wb_r = requests.get(wb_url, headers=self.agent, cookies=self.cookie).content
+
+        headers = {
+            'Upgrade-Insecure-Requests': '1',
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/110.0.0.0 Safari/537.36',
+            'sec-ch-ua': '"Chromium";v="110", "Not A(Brand";v="24", "Google Chrome";v="110"',
+            'sec-ch-ua-mobile': '?0',
+            'sec-ch-ua-platform': '"Windows"',
+            'Cookie': '_T_WM=42143849529e4c29853ce729632a07e9; WEIBOCN_FROM=1110006030; SCF=Aiin03FXkhnlf0GI0bmf3ElaIGAWAZHAyyArSuC6XT7o5qrWwDxM_NPIAtxxpdg_W3W5FUCRjNSWVG2EcylXtnc.; SUB=_2A25JAbU5DeRhGeBK6VMZ9CvNzTiIHXVqDdtxrDV6PUJbktAGLWf1kW1NR8ozkqEX4PfMrYQbw7I6OnS7imzW_aMn; SUBP=0033WrSXqPxfM725Ws9jqgMF55529P9D9W5hpbIWEh2Y_TFmH7mNOSYC5JpX5K-hUgL.FoqXeo2RSh-pSoB2dJLoIEBLxKnL1hzLBK-LxKML1h.L1-zLxKqL1-eLB-eLxKBLB.2LB.2t; SSOLoginState=1678099817; ALF=1680691817'
+
+        }
+        headers.update(self.cookie)
+        print(headers)
+
+        s = requests.Session()
+        s.headers.update(headers)
+
+        s.mount('https://m.weibo.cn', DESAdapter())
+        rr = s.get(wb_url)
+        # rr = requests.get(wb_url, headers=headers)
+        wb_r = rr.content
         soup = BeautifulSoup(wb_r, 'lxml')
         src = ''
         for _script in soup.select('body script'):
@@ -423,7 +443,9 @@ class Weibo:
                 src = _script.string
                 break
         if not src:
-            print('获取失败，请检查爬虫是否正常')
+            with open('error.html', 'w', encoding='utf-8') as f:
+                f.write(rr.text)
+            print('获取失败，请检查爬虫是否正常。一般是因为登录的cookie被风控，或者是IP被风控了。')
             return
         src_text = js2xml.parse(src, debug=False)
         src_tree = js2xml.pretty_print(src_text)

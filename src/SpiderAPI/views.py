@@ -289,7 +289,11 @@ class SpiderWeibo:
 
                 wb = Weibo(int(text), cookie)
                 print("数据库不存在该评论，正在爬虫生成")
-                wb.get_comment_info(text)
+                try:
+                    wb.get_comment_info(text)
+                except Exception as e:
+                    print(e)
+                    return JsonResponse({})
                 res['ok'] = "数据库不存在该用户，爬虫返回数据"
                 wbinfos = CommentWeiboInfo.objects.filter(wb_id=text)
                 endTime = CommentInfo.objects.filter(CommentWeiboInfo_id=text).order_by("c_created_at")
