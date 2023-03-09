@@ -252,8 +252,14 @@ export default {
       return mchartData
     },
     tableData: function () {
+      console.log('sss: ', this.commentInfo)
       let date = []
       for (let i = 0; i < 10; i++) {
+        console.log('i: ', i)
+        console.log(this.commentInfo[i])
+        if (this.commentInfo[i] === undefined) {
+          break
+        }
         date.push({
           date: this.commentInfo[i].fields.c_created_at,
           name: this.commentInfo[i].fields.c_user_name,
